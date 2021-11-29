@@ -74,7 +74,6 @@ li.checked {
 const close = document.getElementsByClassName('close');
 const storage = {};
 function newList(){
-  const li = $(<li></li>);
   const inputValue = $("#listinput").val();
   // console.log(inputValue);  
 
@@ -82,19 +81,22 @@ function newList(){
     alert('nothing there');
   }else{
 
-  $("myList").append(li.text(inputValue)).attr('id', liId);
+  const li = $(<li></li>);  
+  $("myList").append(li.text(inputValue).attr('id', liId));
   // document.getElementById('myList').appendChild(li);
   // const liId = 'list-'+inputValue;
   // li.id = liId;
   localStorage.setItem(liId, inputValue);
   console.log(localStorage.getItem(liId));
+  const x = document.createTextNode('\u2716');
+  li.append($('<span>'.addClass('close').append(x)));
   }
 
-  const span = document.createElement('SPAN');
-  const x = document.createTextNode('\u2716');
-  span.className='close';
-  span.appendChild(x);
-  li.appendChild(span);
+  // const span = document.createElement('SPAN');
+  // const x = document.createTextNode('\u2716');
+  // span.className='close';
+  // span.appendChild(x);
+  // li.appendChild(span);
 
   document.getElementById('listInput').value = '';
   
@@ -104,18 +106,26 @@ function newList(){
   //     div.style.display = 'none';
   //   }
   // }
-  closeItems();
+  // closeItems();
 }
-function closeItems(){
-  for(i=0; i<close.length; i++){
-    close[i].onclick = function(){
-      const div = this.parentElement;
-      div.style.display = 'none';
-      const thisId = div.id;
-      localStorage.removeItem(thisId);
-    }
-  }
-}
+// function closeItems(){
+//   for(i=0; i<close.length; i++){
+//     close[i].onclick = function(){
+//       const div = this.parentElement;
+//       div.style.display = 'none';
+//       const thisId = div.id;
+//       localStorage.removeItem(thisId);
+//     }
+//   }
+// }
+
+//close items
+$(document).on('click','.close',function(){
+  $(this).parent().css('display', 'none');
+  const thisID = $(this).parent().attr('id');
+  localStorage.removeItem(thisId);
+});
+
 function fillList(){
   for(var i=0; i<localStorage.length; i++){
     const li = document.createElement('li');
@@ -134,12 +144,23 @@ function fillList(){
   }
 }
 
+$.each(localStorage, function(key, value){
+  const id = key;
+  const inputValue = value;
+
+  $('#myList').append($('li').text(inputValue).attr('id'), 'list-' + inputValue).append($('span').addclass('close').append(document.createTextNode('\u2716')));
+});
+
 const list = document.querySelector('ul');
 list.addEventListener('click',function(event){
   if(event.target.tagName === 'LI'){
     event.target.classList.toggle('checked');
   }
 },false);
+
+$(document).on('click','li',function(){
+  $(this).toggleClass('checked');
+});
 
 const input = document.getElementById('listInput');
 input.addEventListener('keyup',function(event){
@@ -149,7 +170,17 @@ input.addEventListener('keyup',function(event){
   }
 }, false);
 
+$(document).on('keypress', function(e){
+  if(e.which ===13){
+    newList();
+  }
+});
+
 window.onload = function(){
   fillList();
 }
+
+$(document).ready, function(){
+
+};
 </script>
